@@ -1,73 +1,69 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 
 function App() {
   const [prompt, setPrompt] = useState("")
   const [geminiResponse, setGeminiResponse] = useState("")
   const [groqResponse, setGroqResponse] = useState("")
+  const [openRouterResponse, setOpenRouterResponse] = useState("")
+  const [history, setHistory] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [copied, setCopied] = useState("")
+
+  useEffect(() => {
+    const savedHistory = localStorage.getItem("chatHistory")
+
+    if (savedHistory) {
+      setHistory(JSON.parse(savedHistory))
+    }
+  }, [])
+
+  const saveHistory = (newHistory) => {
+    setHistory(newHistory)
+    localStorage.setItem("chatHistory", JSON.stringify(newHistory))
+  }
 
   const handleSend = async () => {
-    if (!prompt.trim()) return
+    if (!prompt.trim() || loading) return
 
-    setGeminiResponse("Thinking...")
-    setGroqResponse("Thinking...")
+    const currentPrompt = prompt.trim()
+
+    const newHistory = [
+      currentPrompt,
+      ...history.filter(item => item !== currentPrompt)
+    ].slice(0, 10)
+
+    saveHistory(newHistory)
+
+    setLoading(true)
+    setGeminiResponse("")
+    setGroqResponse("")
+    setOpenRouterResponse("")
 
     const geminiRequest = async () => {
-      const maxRetries = 3
+      try {
+        const response = await fetch("/api/gemini", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            prompt: currentPrompt
+          })
+        })
 
-      for (let attempt = 1; attempt <= maxRetries; attempt++) {
-        try {
-          const response = await fetch(
-            "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                "x-goog-api-key": import.meta.env.VITE_GEMINI_API_KEY
-              },
-              body: JSON.stringify({
-                contents: [
-                  {
-                    parts: [
-                      {
-                        text: prompt
-                      }
-                    ]
-                  }
-                ]
-              })
-            }
-          )
+        const data = await response.json()
 
-          const data = await response.json()
-
-          if (response.ok) {
-            const answer =
-              data.candidates?.[0]?.content?.parts?.[0]?.text
-
-            setGeminiResponse(answer || "No response received")
-            return
-          }
-
-          if (response.status === 503 && attempt < maxRetries) {
-            setGeminiResponse(
-              `Gemini busy hai... retrying (${attempt}/${maxRetries})`
-            )
-
-            await new Promise(resolve => setTimeout(resolve, 3000))
-            continue
-          }
-
-          throw new Error(
-            data.error?.message || `API Error: ${response.status}`
-          )
-
-        } catch (error) {
-          if (attempt === maxRetries) {
-            console.error("Gemini Error:", error)
-            setGeminiResponse(`Error: ${error.message}`)
-          }
+        if (!response.ok) {
+          throw new Error(data.error || "Gemini API error")
         }
+
+        setGeminiResponse(
+          data.answer || "No response received"
+        )
+      } catch (error) {
+        console.error("Gemini Error:", error)
+        setGeminiResponse(`Error: ${error.message}`)
       }
     }
 
@@ -79,7 +75,7 @@ function App() {
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
-            prompt: prompt
+            prompt: currentPrompt
           })
         })
 
@@ -89,17 +85,75 @@ function App() {
           throw new Error(data.error || "Groq API error")
         }
 
-        setGroqResponse(data.answer || "No response received")
+        setGroqResponse(
+          data.answer || "No response received"
+        )
       } catch (error) {
         console.error("Groq Error:", error)
         setGroqResponse(`Error: ${error.message}`)
       }
     }
 
+    const openRouterRequest = async () => {
+      try {
+        const response = await fetch("/api/openrouter", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            prompt: currentPrompt
+          })
+        })
+
+        const data = await response.json()
+
+        if (!response.ok) {
+          throw new Error(data.error || "OpenRouter API error")
+        }
+
+        setOpenRouterResponse(
+          data.answer || "No response received"
+        )
+      } catch (error) {
+        console.error("OpenRouter Error:", error)
+        setOpenRouterResponse(
+          `Error: ${error.message}`
+        )
+      }
+    }
+
     await Promise.all([
       geminiRequest(),
-      groqRequest()
+      groqRequest(),
+      openRouterRequest()
     ])
+
+    setLoading(false)
+  }
+
+  const handleHistoryClick = (item) => {
+    setPrompt(item)
+  }
+
+  const handleNewChat = () => {
+    setPrompt("")
+    setGeminiResponse("")
+    setGroqResponse("")
+    setOpenRouterResponse("")
+    setCopied("")
+  }
+
+  const copyResponse = async (response, name) => {
+    if (!response || response.startsWith("Error:")) return
+
+    await navigator.clipboard.writeText(response)
+
+    setCopied(name)
+
+    setTimeout(() => {
+      setCopied("")
+    }, 1500)
   }
 
   return (
@@ -107,50 +161,146 @@ function App() {
       <main className="main-container">
 
         <header>
-          <h1>Multi-LLM chatbot comparator</h1>
-          <p>Ask once . get multiple prespective . compare Ai responses</p>
+          <h1>multi-LLM chatbot comparator</h1>
+          <p>
+            Ask once . get multiple prespective . compare Ai responses
+          </p>
         </header>
 
         <div className="chat-container">
 
           <div className="sidebar">
-            <button>+ New chat</button>
+
+            <button onClick={handleNewChat}>
+              + New chat
+            </button>
+
             <h2>🦋 Chat History</h2>
+
+            <div className="history-list">
+              {history.map((item, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleHistoryClick(item)}
+                >
+                  {item}
+                </button>
+              ))}
+            </div>
+
           </div>
 
           <div className="chat-area">
 
             <div className="prompt-section">
+
               <input
                 type="text"
                 placeholder="Ask anything"
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleSend()
+                  }
+                }}
               />
 
-              <button onClick={handleSend}>send</button>
+              <button
+                onClick={handleSend}
+                disabled={loading}
+              >
+                {loading ? "sending..." : "send"}
+              </button>
+
             </div>
 
             <div className="response-section">
+
               <h2>Ai Responses</h2>
 
               <div className="response-cards">
 
                 <div className="response-card">
                   <h3>Google Gemini</h3>
-                  <p>{geminiResponse || "Ask something..."}</p>
+
+                  <p>
+                    {loading && !geminiResponse
+                      ? "Thinking..."
+                      : geminiResponse || "Ask something..."}
+                  </p>
+
+                  {geminiResponse &&
+                    !geminiResponse.startsWith("Error:") && (
+                      <button
+                        onClick={() =>
+                          copyResponse(
+                            geminiResponse,
+                            "Gemini"
+                          )
+                        }
+                      >
+                        {copied === "Gemini"
+                          ? "Copied!"
+                          : "Copy"}
+                      </button>
+                    )}
                 </div>
 
                 <div className="response-card">
                   <h3>Groq / Llama</h3>
-                  <p>{groqResponse || "Ask something..."}</p>
+
+                  <p>
+                    {loading && !groqResponse
+                      ? "Thinking..."
+                      : groqResponse || "Ask something..."}
+                  </p>
+
+                  {groqResponse &&
+                    !groqResponse.startsWith("Error:") && (
+                      <button
+                        onClick={() =>
+                          copyResponse(
+                            groqResponse,
+                            "Groq"
+                          )
+                        }
+                      >
+                        {copied === "Groq"
+                          ? "Copied!"
+                          : "Copy"}
+                      </button>
+                    )}
                 </div>
 
                 <div className="response-card">
                   <h3>OpenRouter</h3>
+
+                  <p>
+                    {loading && !openRouterResponse
+                      ? "Thinking..."
+                      : openRouterResponse || "Ask something..."}
+                  </p>
+
+                  {openRouterResponse &&
+                    !openRouterResponse.startsWith("Error:") && (
+                      <button
+                        onClick={() =>
+                          copyResponse(
+                            openRouterResponse,
+                            "OpenRouter"
+                          )
+                        }
+                      >
+                        {copied === "OpenRouter"
+                          ? "Copied!"
+                          : "Copy"}
+                      </button>
+                    )}
                 </div>
 
               </div>
+
             </div>
 
           </div>
