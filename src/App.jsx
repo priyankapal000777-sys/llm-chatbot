@@ -4,68 +4,102 @@ import './App.css'
 function App() {
   const [prompt, setPrompt] = useState("")
   const [geminiResponse, setGeminiResponse] = useState("")
+  const [groqResponse, setGroqResponse] = useState("")
 
   const handleSend = async () => {
     if (!prompt.trim()) return
 
     setGeminiResponse("Thinking...")
+    setGroqResponse("Thinking...")
 
-    const maxRetries = 3
+    const geminiRequest = async () => {
+      const maxRetries = 3
 
-    for (let attempt = 1; attempt <= maxRetries; attempt++) {
-      try {
-        const response = await fetch(
-          "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "x-goog-api-key": import.meta.env.VITE_GEMINI_API_KEY
-            },
-            body: JSON.stringify({
-              contents: [
-                {
-                  parts: [
-                    {
-                      text: prompt
-                    }
-                  ]
-                }
-              ]
-            })
-          }
-        )
-
-        const data = await response.json()
-
-        if (response.ok) {
-          const answer =
-            data.candidates?.[0]?.content?.parts?.[0]?.text
-
-          setGeminiResponse(answer || "No response received")
-          return
-        }
-
-        if (response.status === 503 && attempt < maxRetries) {
-          setGeminiResponse(
-            `Gemini busy hai... retrying (${attempt}/${maxRetries})`
+      for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+          const response = await fetch(
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "x-goog-api-key": import.meta.env.VITE_GEMINI_API_KEY
+              },
+              body: JSON.stringify({
+                contents: [
+                  {
+                    parts: [
+                      {
+                        text: prompt
+                      }
+                    ]
+                  }
+                ]
+              })
+            }
           )
 
-          await new Promise(resolve => setTimeout(resolve, 3000))
-          continue
-        }
+          const data = await response.json()
 
-        throw new Error(
-          data.error?.message || `API Error: ${response.status}`
-        )
+          if (response.ok) {
+            const answer =
+              data.candidates?.[0]?.content?.parts?.[0]?.text
 
-      } catch (error) {
-        if (attempt === maxRetries) {
-          console.error("Gemini Error:", error)
-          setGeminiResponse(`Error: ${error.message}`)
+            setGeminiResponse(answer || "No response received")
+            return
+          }
+
+          if (response.status === 503 && attempt < maxRetries) {
+            setGeminiResponse(
+              `Gemini busy hai... retrying (${attempt}/${maxRetries})`
+            )
+
+            await new Promise(resolve => setTimeout(resolve, 3000))
+            continue
+          }
+
+          throw new Error(
+            data.error?.message || `API Error: ${response.status}`
+          )
+
+        } catch (error) {
+          if (attempt === maxRetries) {
+            console.error("Gemini Error:", error)
+            setGeminiResponse(`Error: ${error.message}`)
+          }
         }
       }
     }
+
+    const groqRequest = async () => {
+      try {
+        const response = await fetch("/api/groq", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            prompt: prompt
+          })
+        })
+
+        const data = await response.json()
+
+        if (!response.ok) {
+          throw new Error(data.error || "Groq API error")
+        }
+
+        setGroqResponse(data.answer || "No response received")
+      } catch (error) {
+        console.error("Groq Error:", error)
+        setGroqResponse(`Error: ${error.message}`)
+      }
+    }
+
+    await Promise.all([
+      geminiRequest(),
+      groqRequest()
+    ])
   }
 
   return (
@@ -73,7 +107,7 @@ function App() {
       <main className="main-container">
 
         <header>
-          <h1>multi-LLM chatbot comparator</h1>
+          <h1>Multi-LLM chatbot comparator</h1>
           <p>Ask once . get multiple prespective . compare Ai responses</p>
         </header>
 
@@ -109,6 +143,7 @@ function App() {
 
                 <div className="response-card">
                   <h3>Groq / Llama</h3>
+                  <p>{groqResponse || "Ask something..."}</p>
                 </div>
 
                 <div className="response-card">
