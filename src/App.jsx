@@ -4,8 +4,6 @@ import './App.css'
 function App() {
   const [prompt, setPrompt] = useState("")
   const [geminiResponse, setGeminiResponse] = useState("")
-  const [groqResponse, setGroqResponse] = useState("")
-  const [openRouterResponse, setOpenRouterResponse] = useState("")
   const [history, setHistory] = useState([])
   const [loading, setLoading] = useState(false)
   const [copied, setCopied] = useState("")
@@ -37,97 +35,31 @@ function App() {
 
     setLoading(true)
     setGeminiResponse("")
-    setGroqResponse("")
-    setOpenRouterResponse("")
 
-    const geminiRequest = async () => {
-      try {
-        const response = await fetch("/api/gemini", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            prompt: currentPrompt
-          })
+    try {
+      const response = await fetch("/api/gemini", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          prompt: currentPrompt
         })
+      })
 
-        const data = await response.json()
+      const data = await response.json()
 
-        if (!response.ok) {
-          throw new Error(data.error || "Gemini API error")
-        }
-
-        setGeminiResponse(
-          data.answer || "No response received"
-        )
-      } catch (error) {
-        console.error("Gemini Error:", error)
-        setGeminiResponse(`Error: ${error.message}`)
+      if (!response.ok) {
+        throw new Error(data.error || "Gemini API error")
       }
+
+      setGeminiResponse(
+        data.answer || "No response received"
+      )
+    } catch (error) {
+      console.error("Gemini Error:", error)
+      setGeminiResponse(`Error: ${error.message}`)
     }
-
-    const groqRequest = async () => {
-      try {
-        const response = await fetch("/api/groq", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            prompt: currentPrompt
-          })
-        })
-
-        const data = await response.json()
-
-        if (!response.ok) {
-          throw new Error(data.error || "Groq API error")
-        }
-
-        setGroqResponse(
-          data.answer || "No response received"
-        )
-      } catch (error) {
-        console.error("Groq Error:", error)
-        setGroqResponse(`Error: ${error.message}`)
-      }
-    }
-
-    const openRouterRequest = async () => {
-      try {
-        const response = await fetch("/api/openrouter", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            prompt: currentPrompt
-          })
-        })
-
-        const data = await response.json()
-
-        if (!response.ok) {
-          throw new Error(data.error || "OpenRouter API error")
-        }
-
-        setOpenRouterResponse(
-          data.answer || "No response received"
-        )
-      } catch (error) {
-        console.error("OpenRouter Error:", error)
-        setOpenRouterResponse(
-          `Error: ${error.message}`
-        )
-      }
-    }
-
-    await Promise.all([
-      geminiRequest(),
-      groqRequest(),
-      openRouterRequest()
-    ])
 
     setLoading(false)
   }
@@ -139,17 +71,15 @@ function App() {
   const handleNewChat = () => {
     setPrompt("")
     setGeminiResponse("")
-    setGroqResponse("")
-    setOpenRouterResponse("")
     setCopied("")
   }
 
-  const copyResponse = async (response, name) => {
+  const copyResponse = async (response) => {
     if (!response || response.startsWith("Error:")) return
 
     await navigator.clipboard.writeText(response)
 
-    setCopied(name)
+    setCopied("Gemini")
 
     setTimeout(() => {
       setCopied("")
@@ -161,9 +91,9 @@ function App() {
       <main className="main-container">
 
         <header>
-          <h1>multi-LLM chatbot comparator</h1>
+          <h1>Gemini AI Chatbot</h1>
           <p>
-            Ask once . get multiple prespective . compare Ai responses
+            Ask anything . get clear and helpful AI responses
           </p>
         </header>
 
@@ -217,11 +147,12 @@ function App() {
 
             <div className="response-section">
 
-              <h2>Ai Responses</h2>
+              <h2>AI Response</h2>
 
               <div className="response-cards">
 
                 <div className="response-card">
+
                   <h3>Google Gemini</h3>
 
                   <p>
@@ -234,10 +165,7 @@ function App() {
                     !geminiResponse.startsWith("Error:") && (
                       <button
                         onClick={() =>
-                          copyResponse(
-                            geminiResponse,
-                            "Gemini"
-                          )
+                          copyResponse(geminiResponse)
                         }
                       >
                         {copied === "Gemini"
@@ -245,58 +173,7 @@ function App() {
                           : "Copy"}
                       </button>
                     )}
-                </div>
 
-                <div className="response-card">
-                  <h3>Groq / Llama</h3>
-
-                  <p>
-                    {loading && !groqResponse
-                      ? "Thinking..."
-                      : groqResponse || "Ask something..."}
-                  </p>
-
-                  {groqResponse &&
-                    !groqResponse.startsWith("Error:") && (
-                      <button
-                        onClick={() =>
-                          copyResponse(
-                            groqResponse,
-                            "Groq"
-                          )
-                        }
-                      >
-                        {copied === "Groq"
-                          ? "Copied!"
-                          : "Copy"}
-                      </button>
-                    )}
-                </div>
-
-                <div className="response-card">
-                  <h3>OpenRouter</h3>
-
-                  <p>
-                    {loading && !openRouterResponse
-                      ? "Thinking..."
-                      : openRouterResponse || "Ask something..."}
-                  </p>
-
-                  {openRouterResponse &&
-                    !openRouterResponse.startsWith("Error:") && (
-                      <button
-                        onClick={() =>
-                          copyResponse(
-                            openRouterResponse,
-                            "OpenRouter"
-                          )
-                        }
-                      >
-                        {copied === "OpenRouter"
-                          ? "Copied!"
-                          : "Copy"}
-                      </button>
-                    )}
                 </div>
 
               </div>

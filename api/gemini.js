@@ -15,7 +15,7 @@ export default async function handler(req, res) {
     }
 
     const response = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent",
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent",
       {
         method: "POST",
         headers: {
@@ -44,12 +44,20 @@ export default async function handler(req, res) {
       })
     }
 
-    const answer =
-      data.candidates?.[0]?.content?.parts?.[0]?.text
+    let answer =
+      data.candidates?.[0]?.content?.parts?.[0]?.text || ""
+
+    answer = answer
+      .replace(/#{1,6}\s*/g, "")
+      .replace(/\*\*/g, "")
+      .replace(/`/g, "")
+      .replace(/^\s*[-*+]\s+/gm, "")
+      .trim()
 
     return res.status(200).json({
       answer: answer || "No response received"
     })
+
   } catch (error) {
     return res.status(500).json({
       error: error.message || "Server error"

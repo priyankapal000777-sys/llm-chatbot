@@ -1,230 +1,268 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-body{
-    min-height: 100vh;
-    font-family: Arial, sans-serif;                                                       
-    background-image: url("/pink%20butterfly.jpeg");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-}
-.main-container{
-    min-height: 100vh;
-    padding: 22px;
-    background: rgba(255, 180, 220, 0.18);
-}
-header{
-    width: 100%;
-    padding: 18px 28px;
-    margin-bottom: 16px;
-    border-radius: 20px;
-    background: rgba(255, 255, 255, 0.38);
-    backdrop-filter: blur(0px);
-    box-shadow: 0 8px 25px rgba(120, 60, 120, 0.15);
-}
-header h1{
-    font-size: 30px;
-    color: #54083c;
-    margin-bottom: 7px;
-    
-}
-header p{
-     color: #54083c;
+* { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
+} 
+
+body{ 
+    min-height: 100vh; 
+    font-family: Arial, sans-serif;                                                        
+    background-image: url("/pink%20butterfly.jpeg"); 
+    background-size: cover; 
+    background-position: center; 
+    background-repeat: no-repeat; 
+    background-attachment: fixed; 
+} 
+
+.main-container{ 
+    min-height: 100vh; 
+    padding: 22px; 
+    background: rgba(255, 180, 220, 0.18); 
+} 
+
+header{ 
+    width: 100%; 
+    padding: 18px 28px; 
+    margin-bottom: 16px; 
+    border-radius: 20px; 
+    background: rgba(255, 255, 255, 0.38); 
+    backdrop-filter: blur(0px); 
+    box-shadow: 0 8px 25px rgba(120, 60, 120, 0.15); 
+} 
+
+header h1{ 
+    font-size: 30px; 
+    color: #54083c; 
+    margin-bottom: 7px; 
+} 
+
+header p{ 
+    color: #54083c; 
+    font-size: 15px; 
+} 
+
+.chat-container{ 
+    display: flex; 
+    gap: 16px; 
+    max-width: 1500px; 
+    margin: auto; 
+    align-items: stretch; 
+} 
+
+.sidebar{ 
+    width: 270px; 
+    min-height: 680px; 
+    padding: 20px; 
+    border-radius: 20px; 
+    background: rgba(255, 245, 255, 0.55); 
+    backdrop-filter: blur(5px); 
+    box-shadow: 0 8px 25px rgba(100, 50, 100, 0.15); 
+} 
+
+.sidebar button{ 
+    width: 100%; 
+    padding: 14px; 
+    border: none; 
+    border-radius: 12px; 
+    background: #ec5fa5; 
+    color: white; 
+    font-size: 16px; 
+    cursor: pointer; 
+    margin-bottom: 25px; 
+} 
+
+.sidebar h2{ 
+    font-size: 17px; 
+    color: #54083c; 
+} 
+
+.chat-area{ 
+    flex: 1; 
+    min-width: 0; 
+    padding: 18px; 
+    border-radius: 20px; 
+    background: rgba(255, 245, 255, 0.45); 
+    backdrop-filter: blur(0px); 
+    box-shadow: 0 8px 25px rgba(100, 50, 100, 0.15); 
+} 
+
+.prompt-section{ 
+    display: flex; 
+    width: 100%; 
+    gap: 12px; 
+    margin-bottom: 22px; 
+} 
+
+.prompt-section input{ 
+    flex: 1; 
+    padding: 16px 18px; 
+    border: none; 
+    outline: none; 
+    border-radius: 14px; 
+    background: rgba(255, 255, 255, 0.85); 
+    font-size: 16px; 
+    color: #54083c; 
+} 
+
+.prompt-section button{ 
+    padding: 0 28px; 
+    border: none; 
+    border-radius: 14px; 
+    background: #ec5fa5; 
+    color: white; 
+    font-size: 16px; 
+    cursor: pointer; 
+} 
+
+.response-section h2{ 
+    color: #54083c; 
+    margin-bottom: 14px; 
+} 
+
+.response-cards{ 
+    display: flex; 
+    flex-direction: row; 
+    gap: 18px; 
+    width: 100%; 
+} 
+
+.response-card{ 
+    flex: 1; 
+    min-width: 0; 
+    min-height: 430px; 
+    padding: 22px; 
+    border-radius: 18px; 
+    background: rgba(255, 255, 255, 0.68); 
+    backdrop-filter: blur(25px); 
+    border: 1px solid rgba(255, 255, 255, 0.7); 
+    box-shadow: 0 5px 18px rgba(120, 70, 120, 0.12); 
+} 
+
+.response-card h3{ 
+    color: #493b61; 
+    font-size: 18px; 
+    margin-bottom: 15px; 
+} 
+
+.response-card p {
+    color: #000000;
+    white-space: pre-wrap;
+    line-height: 1.6;
     font-size: 15px;
-   
-}
-.chat-container{
-    display: flex;
-    gap: 16px;
-    max-width: 1500px;
-    margin: auto;
-    align-items: stretch;
-}
-.sidebar{
-    width: 270px;
-    min-height: 680px;
-    padding: 20px;
-    border-radius: 20px;
-    background: rgba(255, 245, 255, 0.55);
-    backdrop-filter: blur(5px);
-    box-shadow: 0 8px 25px rgba(100, 50, 100, 0.15);
-}
-.sidebar button{
-    width: 100%;
-    padding: 14px;
-    border: none;
-    border-radius: 12px;
-    background: #ec5fa5;
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
-    margin-bottom: 25px;
-}
-.sidebar h2{
-    font-size: 17px;
-     color: #54083c;
-}
-.chat-area{
-    flex: 1;
-    min-width: 0;
-    padding: 18px;
-    border-radius: 20px;
-    background: rgba(255, 245, 255, 0.45);
-    backdrop-filter: blur(0px);
-    box-shadow: 0 8px 25px rgba(100, 50, 100, 0.15);
-}
-.prompt-section{
-    display: flex;
-    width: 100%;
-    gap: 12px;
-    margin-bottom: 22px;
-}
-.prompt-section input{
-    flex: 1;
-    padding: 16px 18px;
-    border: none;
-    outline: none;
-    border-radius: 14px;
-    background: rgba(255, 255, 255, 0.85);
-    font-size: 16px;
-    color: #54083c;
-}
-.prompt-section button{
-    padding: 0 28px;
-    border: none;
-    border-radius: 14px;
-    background: #ec5fa5;
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
-}
-.response-section h2{
-     color: #54083c;
-    margin-bottom: 14px;
-}
-.response-cards{
-    display: flex;
-    flex-direction: row;
-    gap: 18px;
-    width: 100%;
-}
-.response-card{
-    flex: 1;
-    min-width: 0;
-    min-height: 430px;
-    padding: 22px;
-    border-radius: 18px;
-    background: rgba(255, 255, 255, 0.68);
-    backdrop-filter: blur(25px);
-    border: 1px solid rgba(255, 255, 255, 0.7);
-    box-shadow: 0 5px 18px rgba(120, 70, 120, 0.12);
-}
-.response-card h3{
-    color: #493b61;
-    font-size: 18px;
-    margin-bottom: 15px;
+    max-height: 330px;
+    overflow-y: auto;
+    padding-right: 8px;
+
 }
 
-@media (max-width: 900px){
+@media (max-width: 900px){ 
 
-    .main-container {
-        padding: 12px;
-        overflow-x: hidden;
-    }
+    .main-container { 
+        padding: 12px; 
+        overflow-x: hidden; 
+    } 
 
-    .chat-container {
-        flex-direction: column;
-        width: 100%;
-    }
+    .chat-container { 
+        flex-direction: column; 
+        width: 100%; 
+    } 
 
-    .sidebar {
-        width: 100%;
-        min-height: auto;
-    }
+    .sidebar { 
+        width: 100%; 
+        min-height: auto; 
+    } 
 
-    .chat-area {
-        width: 100%;
-        min-width: 0;
-    }
+    .chat-area { 
+        width: 100%; 
+        min-width: 0; 
+    } 
 
-    .response-cards {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 12px;
-        width: 100%;
-    }
+    .response-cards { 
+        display: grid; 
+        grid-template-columns: repeat(2, minmax(0, 1fr)); 
+        gap: 12px; 
+        width: 100%; 
+    } 
 
-    .response-card {
-        width: 100%;
-        min-width: 0;
-        min-height: 300px;
-    }
-}
+    .response-card { 
+        width: 100%; 
+        min-width: 0; 
+        min-height: 300px; 
+    } 
+} 
 
-@media (max-width: 600px) {
-    body {
-        overflow-x: hidden;
-    }
-       .main-container {
-        padding: 10px;
-        width: 100%;
-    }
-    header {
-        width: 100%;
-        padding: 15px;
-    }
-    header h1 {
-        font-size: 23px;
-    }
-    header p {
-        font-size: 12px;
-    }
-   .chat-container {
-        width: 100%;
-    }
-    .sidebar {
-        width: 100%;
-        padding: 15px;
-    }
-   .chat-area {
-        width: 100%;
-        padding: 12px;
-    }
-   .prompt-section {
-        flex-direction: column;
-        width: 100%;
-    }
-   .prompt-section input {
-        width: 100%;
-    }
-   .prompt-section button {
-        width: 100%;
-        padding: 12px;
-    }
-   .response-cards {
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-    }
-   .response-card {
-        width: 100%;
-        min-height: 280px;
-    }
-}
+@media (max-width: 600px) { 
 
+    body { 
+        overflow-x: hidden; 
+    } 
 
-.response-card {
-    transition: transform 0. 3s ease, box-shadow 0.3s ease;
-}
+    .main-container { 
+        padding: 10px; 
+        width: 100%; 
+    } 
 
-.response-card:hover {
-    transform: translateY(-8px);
-    box-shadow:
-        0 0 15px rgba(52, 13, 32, 0.6),
-        0 0 30px rgba(44, 8, 26, 0.4),
-        0 15px 35px rgba(50, 4, 37, 0.3);
+    header { 
+        width: 100%; 
+        padding: 15px; 
+    } 
+
+    header h1 { 
+        font-size: 23px; 
+    } 
+
+    header p { 
+        font-size: 12px; 
+    } 
+
+    .chat-container { 
+        width: 100%; 
+    } 
+
+    .sidebar { 
+        width: 100%; 
+        padding: 15px; 
+    } 
+
+    .chat-area { 
+        width: 100%; 
+        padding: 12px; 
+    } 
+
+    .prompt-section { 
+        flex-direction: column; 
+        width: 100%; 
+    } 
+
+    .prompt-section input { 
+        width: 100%; 
+    } 
+
+    .prompt-section button { 
+        width: 100%; 
+        padding: 12px; 
+    } 
+
+    .response-cards { 
+        display: flex; 
+        flex-direction: column; 
+        width: 100%; 
+    } 
+
+    .response-card { 
+        width: 100%; 
+        min-height: 280px; 
+    } 
+} 
+
+.response-card { 
+    transition: transform 0.3s ease, box-shadow 0.3s ease; 
+} 
+
+.response-card:hover { 
+    transform: translateY(-8px); 
+    box-shadow: 
+        0 0 15px rgba(52, 13, 32, 0.6), 
+        0 0 30px rgba(44, 8, 26, 0.4), 
+        0 15px 35px rgba(50, 4, 37, 0.3); 
 }
