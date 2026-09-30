@@ -266,3 +266,9 @@ header p{
         0 0 30px rgba(44, 8, 26, 0.4), 
         0 15px 35px rgba(50, 4, 37, 0.3); 
 }
+
+.history-list {
+    max-height: 480px;
+    overflow-y: auto;
+    padding-right: 5px;
+}

@@ -68,6 +68,11 @@ function App() {
     setPrompt(item)
   }
 
+  const handleDeleteHistory = (index) => {
+    const newHistory = history.filter((_, i) => i !== index)
+    saveHistory(newHistory)
+  }
+
   const handleNewChat = () => {
     setPrompt("")
     setGeminiResponse("")
@@ -109,12 +114,19 @@ function App() {
 
             <div className="history-list">
               {history.map((item, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleHistoryClick(item)}
-                >
-                  {item}
-                </button>
+                <div key={index}>
+                  <button
+                    onClick={() => handleHistoryClick(item)}
+                  >
+                    {item}
+                  </button>
+
+                  <button
+                    onClick={() => handleDeleteHistory(index)}
+                  >
+                    🗑️
+                  </button>
+                </div>
               ))}
             </div>
 
